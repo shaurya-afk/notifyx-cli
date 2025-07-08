@@ -1,0 +1,27 @@
+stages:
+  - build
+  - test
+
+build_api_service:
+  stage: build
+  script:
+   - cd api-service
+   - ./mvnw clean package
+
+test_api_service:
+  stage: test
+  script:
+    - cd api-service
+    - ./mvnw test
+
+build_notifier_service:
+  stage: build
+  script:
+    - cd notifier-service
+    - ./mvnw clean package
+
+test_notifier_service:
+  stage: test
+  script:
+   - cd notifier_service
+   - ./mvnw test
