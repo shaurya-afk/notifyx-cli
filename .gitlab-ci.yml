@@ -28,6 +28,6 @@ build_notifier_service:
 test_notifier_service:
   stage: test
   script:
-    - cd notifier_service
+    - cd notifier-service
     - chmod +x mvnw
     - ./mvnw test
