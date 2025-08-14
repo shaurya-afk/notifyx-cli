@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.kafka.core.KafkaTemplate;
+import com.beta.apiservice.service.NotificationService;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -23,13 +23,25 @@ class NotificationControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private NotificationService notificationService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void sendNotification_validRequest_returnsOk() throws Exception {
-        NotificationRequest req = new NotificationRequest("user1", "Hello", "info");
+        NotificationRequest req = new NotificationRequest(
+            "project1", 
+            List.of("user1"), 
+            "Hello", 
+            "Test Title", 
+            "email", 
+            null, 
+            Map.of(), 
+            Map.of(), 
+            Map.of()
+        );
+        // Mock service to avoid serialization issues
+        Mockito.when(notificationService.sendNotification(Mockito.any(), Mockito.anyString())).thenReturn("notif-1");
         mockMvc.perform(post("/api/notification/send")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
@@ -50,8 +62,8 @@ class NotificationControllerTest {
     @Test
     void bulkSendNotification_mixedRequests_returnsAccepted() throws Exception {
         List<NotificationRequest> requests = List.of(
-                new NotificationRequest("user1", "Hello", "info"),
-                new NotificationRequest("user2", null, "info") // null message
+                new NotificationRequest("project1", List.of("user1"), "Hello", "Title1", "email", null, Map.of(), Map.of(), Map.of()),
+                new NotificationRequest("project1", List.of("user2"), null, "Title2", "email", null, Map.of(), Map.of(), Map.of()) // null message
         );
         mockMvc.perform(post("/api/notification/bulk")
                 .contentType(MediaType.APPLICATION_JSON)

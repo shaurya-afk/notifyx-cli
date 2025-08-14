@@ -4,6 +4,12 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+build/
+*.jar
+*.war
+.env
+application.properties
+
 ### STS ###
 .apt_generated
 .classpath
